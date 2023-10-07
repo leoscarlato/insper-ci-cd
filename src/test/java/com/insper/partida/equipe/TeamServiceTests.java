@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.insper.partida.equipe.dto.SaveTeamDTO;
+import com.insper.partida.equipe.exception.TeamAlreadyExistsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,51 @@ public class TeamServiceTests {
         List<TeamReturnDTO> resp = teamService.listTeams();
 
         Assertions.assertEquals(1, resp.size());
+    }
+
+    @Test
+    void test_saveTeam() {
+
+        SaveTeamDTO saveTeam = new SaveTeamDTO();
+        saveTeam.setIdentifier("time-1");
+        saveTeam.setName("Time 1");
+
+        Mockito.when(teamRepository.existsByIdentifier(saveTeam.getIdentifier())).thenReturn(false);
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.save(Mockito.any(Team.class))).thenReturn(team);
+
+        TeamReturnDTO resp = teamService.saveTeam(saveTeam);
+
+        Assertions.assertEquals("time-1", resp.getIdentifier());
+        Assertions.assertEquals("Time 1", resp.getName());
+    }
+
+    @Test
+    void test_saveTeamAlreadyExists() {
+
+        SaveTeamDTO saveTeam = new SaveTeamDTO();
+        saveTeam.setIdentifier("time-1");
+        saveTeam.setName("Time 1");
+
+        Mockito.when(teamRepository.existsByIdentifier(saveTeam.getIdentifier())).thenReturn(true);
+
+        Assertions.assertThrows(TeamAlreadyExistsException.class, () -> {
+            teamService.saveTeam(saveTeam);
+        });
+    }
+
+    @Test
+    void test_deleteTeam() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(team);
+
+        teamService.deleteTeam(team.getIdentifier());
+
+        Mockito.verify(teamRepository, Mockito.times(1)).delete(team);
     }
 
 
