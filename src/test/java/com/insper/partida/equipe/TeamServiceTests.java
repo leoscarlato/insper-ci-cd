@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.insper.partida.equipe.dto.SaveTeamDTO;
 import com.insper.partida.equipe.exception.TeamAlreadyExistsException;
+import com.insper.partida.equipe.exception.TeamNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,42 @@ public class TeamServiceTests {
         teamService.deleteTeam(team.getIdentifier());
 
         Mockito.verify(teamRepository, Mockito.times(1)).delete(team);
+    }
+
+    @Test
+    void test_deleteTeamNotFound() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(null);
+
+        Assertions.assertThrows(TeamNotFoundException.class, () -> {
+            teamService.deleteTeam(team.getIdentifier());
+        });
+    }
+
+    @Test
+    void test_getTeam() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(team);
+
+        Team resp = teamService.getTeam(team.getIdentifier());
+
+        Assertions.assertEquals(team, resp);
+    }
+
+    @Test
+    void test_getTeamNotFound() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(null);
+
+        Assertions.assertThrows(TeamNotFoundException.class, () -> {
+            teamService.getTeam(team.getIdentifier());
+        });
     }
 
 
