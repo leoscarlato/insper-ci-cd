@@ -50,6 +50,84 @@ public class TeamServiceTests {
     }
 
     @Test
+    void test_listTeamsNotEmptyValues() {
+
+        Team team = getTeam();
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+    }
+
+    @Test
+    void test_listTeamsNotEmptyValues2() {
+
+        Team team1 = getTeam();
+        Team team2 = getTeam();
+
+        team2.setId("2");
+        team2.setIdentifier("time-2");
+        team2.setName("Time 2");
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team1);
+        lista.add(team2);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+
+        Assertions.assertEquals("time-2", resp.get(1).getIdentifier());
+        Assertions.assertEquals("Time 2", resp.get(1).getName());
+
+    }
+
+    @Test
+    void test_listTeamsNotEmptyValues3() {
+
+        Team team1 = getTeam();
+        Team team2 = getTeam();
+        Team team3 = getTeam();
+
+        team2.setId("2");
+        team2.setIdentifier("time-2");
+        team2.setName("Time 2");
+
+        team3.setId("3");
+        team3.setIdentifier("time-3");
+        team3.setName("Time 3");
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team1);
+        lista.add(team2);
+        lista.add(team3);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+
+        Assertions.assertEquals("time-2", resp.get(1).getIdentifier());
+        Assertions.assertEquals("Time 2", resp.get(1).getName());
+
+        Assertions.assertEquals("time-3", resp.get(2).getIdentifier());
+        Assertions.assertEquals("Time 3", resp.get(2).getName());
+
+    }
+
+
+    @Test
     void test_saveTeam() {
 
         SaveTeamDTO saveTeam = new SaveTeamDTO();
