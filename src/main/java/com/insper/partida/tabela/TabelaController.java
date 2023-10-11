@@ -1,9 +1,11 @@
 package com.insper.partida.tabela;
 
+import com.insper.partida.tabela.dto.TabelaReturnDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import java.util.List;
 
@@ -15,8 +17,18 @@ public class TabelaController {
     private TabelaService tabelaService;
 
     @GetMapping
-    public List<TimeDTO> getTabela() {
+    public List<Tabela> getTabela() {
         return tabelaService.getTabela();
+    }
+
+    @GetMapping("/{nome}")
+    public Tabela getTabelaByNome(@PathVariable String nome) {
+        return tabelaService.getTabelaByNome(nome);
+    }
+
+    @PostMapping
+    public TabelaReturnDTO saveTabela(Tabela tabela) {
+        return TabelaReturnDTO.covert(tabelaService.saveTabela(tabela));
     }
 
 }
