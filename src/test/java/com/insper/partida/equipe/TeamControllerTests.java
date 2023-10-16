@@ -1,6 +1,7 @@
 package com.insper.partida.equipe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.insper.partida.equipe.dto.SaveTeamDTO;
 import com.insper.partida.equipe.dto.TeamReturnDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +60,41 @@ public class TeamControllerTests {
         Assertions.assertEquals(om.writeValueAsString(times), resp);
 
     }
+
+    @Test
+    void test_saveTeam() throws Exception {
+
+        SaveTeamDTO saveTeamDto = new SaveTeamDTO();
+
+        TeamReturnDTO createdTeam = new TeamReturnDTO();
+
+        Mockito.when(teamService.saveTeam(Mockito.any(SaveTeamDTO.class))).thenReturn(createdTeam);
+
+        ObjectMapper om = new ObjectMapper();
+
+        MvcResult result = mockMvc
+                .perform(MockMvcRequestBuilders.post("/team")
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(saveTeamDto)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+
+        String resp = result.getResponse().getContentAsString();
+        Assertions.assertEquals(om.writeValueAsString(createdTeam), resp);
+
+    }
+
+    @Test
+    void test_deleteTeam() throws Exception {
+
+        String teamIdentifier = "test-identifier";
+        
+        Mockito.doNothing().when(teamService).deleteTeam(teamIdentifier);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/team/" + teamIdentifier))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
 
 
 

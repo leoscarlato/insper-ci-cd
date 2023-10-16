@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.insper.partida.equipe.dto.SaveTeamDTO;
 import com.insper.partida.equipe.exception.TeamAlreadyExistsException;
+import com.insper.partida.equipe.exception.TeamNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,85 @@ public class TeamServiceTests {
 
         Assertions.assertEquals(1, resp.size());
     }
+
+    @Test
+    void test_listTeamsNotEmptyValues() {
+
+        Team team = getTeam();
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+    }
+
+    @Test
+    void test_listTeamsNotEmptyValues2() {
+
+        Team team1 = getTeam();
+        Team team2 = getTeam();
+
+        team2.setId("2");
+        team2.setIdentifier("time-2");
+        team2.setName("Time 2");
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team1);
+        lista.add(team2);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+
+        Assertions.assertEquals("time-2", resp.get(1).getIdentifier());
+        Assertions.assertEquals("Time 2", resp.get(1).getName());
+
+    }
+    
+
+    @Test
+    void test_listTeamsNotEmptyValues3() {
+
+        Team team1 = getTeam();
+        Team team2 = getTeam();
+        Team team3 = getTeam();
+
+        team2.setId("2");
+        team2.setIdentifier("time-2");
+        team2.setName("Time 2");
+
+        team3.setId("3");
+        team3.setIdentifier("time-3");
+        team3.setName("Time 3");
+
+        List<Team> lista = new ArrayList<>();
+        lista.add(team1);
+        lista.add(team2);
+        lista.add(team3);
+
+        Mockito.when(teamRepository.findAll()).thenReturn(lista);
+
+        List<TeamReturnDTO> resp = teamService.listTeams();
+
+        Assertions.assertEquals("time-1", resp.get(0).getIdentifier());
+        Assertions.assertEquals("Time 1", resp.get(0).getName());
+
+        Assertions.assertEquals("time-2", resp.get(1).getIdentifier());
+        Assertions.assertEquals("Time 2", resp.get(1).getName());
+
+        Assertions.assertEquals("time-3", resp.get(2).getIdentifier());
+        Assertions.assertEquals("Time 3", resp.get(2).getName());
+
+    }
+
 
     @Test
     void test_saveTeam() {
@@ -93,6 +173,41 @@ public class TeamServiceTests {
         Mockito.verify(teamRepository, Mockito.times(1)).delete(team);
     }
 
+    @Test
+    void test_deleteTeamNotFound() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(null);
+
+        Assertions.assertThrows(TeamNotFoundException.class, () -> {
+            teamService.deleteTeam(team.getIdentifier());
+        });
+    }
+
+    @Test
+    void test_getTeam() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(team);
+
+        Team resp = teamService.getTeam(team.getIdentifier());
+
+        Assertions.assertEquals(team, resp);
+    }
+
+    @Test
+    void test_getTeamNotFound() {
+
+        Team team = getTeam();
+
+        Mockito.when(teamRepository.findByIdentifier(team.getIdentifier())).thenReturn(null);
+
+        Assertions.assertThrows(TeamNotFoundException.class, () -> {
+            teamService.getTeam(team.getIdentifier());
+        });
+    }
 
 
 
